@@ -2,13 +2,23 @@
 This repository is a template for other projects and has default skills and instructions on commonly used frameworks to create new applications.
 
 ## Instructions
-Main [instructions](.github/copilot.instructions.md) document holds all generic instructions and framework specific instructions.
+Main [instructions](.github/copilot-instructions.md) document holds all generic instructions and framework specific instructions.
 
 ## Skills
 A set of generic [skills](.github/skills/) document standard skills for every project.
 
+## Design system
+The jumpbit.com corporate identity follows the **Jump Bit** design system (https://claude.ai/artifact/FchxsJbujLEuHSzFKx4VK8). [assets/](assets/) implements it:
+
+- [jumpbit-tokens.json](assets/jumpbit-tokens.json) — colour, typography and radius tokens.
+- [jumpbit-theme.css](assets/jumpbit-theme.css) — CSS custom properties and base, button, card, status and landing styles; light and dark themes.
+- [jumpbit-theme.axaml](assets/jumpbit-theme.axaml) and [jumpbit-styles.axaml](assets/jumpbit-styles.axaml) — the same for Avalonia.
+- Inter variable fonts in [assets/font/](assets/font/), the only typeface; logos, favicons, app icons and `site.webmanifest`.
+
+The [styling skill](.github/skills/styling/SKILL.md) describes how to apply it.
+
 ## Project features
-The project featuers will be stored as markdown in the folder [features](features/).
+The project features will be stored as markdown in the folder [features](features/).
 
 ## Copying the template to a new repository
 
