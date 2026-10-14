@@ -31,7 +31,7 @@ TEMPLATE_PATHS = (
 )
 THEME = Theme(
     {
-        "accent": "bold cyan",
+        "accent": "bold",
         "success": "bold green",
         "error": "bold red",
     }
