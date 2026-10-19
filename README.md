@@ -12,6 +12,7 @@ The jumpbit.com corporate identity follows the **Jump Bit** design system (https
 
 - [jumpbit-tokens.json](assets/jumpbit-tokens.json) — colour, typography and radius tokens.
 - [jumpbit-theme.css](assets/jumpbit-theme.css) — CSS custom properties and base, button, card, status and landing styles; light and dark themes.
+- [jumpbit-ui.css](assets/jumpbit-ui.css) — optional, very light Bootstrap-like layer (grid, navbar, forms, alerts, badges, tables, utilities) with Bootstrap 5 class names and no JavaScript; open [jumpbit-ui-example.html](assets/jumpbit-ui-example.html) in a browser to see it.
 - [jumpbit-theme.axaml](assets/jumpbit-theme.axaml) and [jumpbit-styles.axaml](assets/jumpbit-styles.axaml) — the same for Avalonia.
 - Inter variable fonts in [assets/font/](assets/font/), the only typeface; logos, favicons, app icons and `site.webmanifest`.
 
