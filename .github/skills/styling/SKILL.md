@@ -13,6 +13,7 @@ description: >
 The **Jump Bit design system** (https://claude.ai/artifact/FchxsJbujLEuHSzFKx4VK8) defines the identity. The files in `assets/` implement it:
 - `jumpbit-tokens.json` — colour, type and radius tokens.
 - `jumpbit-theme.css` — tokens as CSS custom properties plus the base, `.btn`, `.card`, `.text-*` and `.landing` styles for HTML clients.
+- `jumpbit-ui.css` — optional, very light Bootstrap-like layer on top of the theme: container and 12-column grid (`.row`, `.col`, `.col-md-*`), navbar, forms (`.form-control`, `.form-select`, `.form-check`), alerts, badges, tables, list group and spacing/flex/text utilities with Bootstrap 5 class names. No JavaScript. `jumpbit-ui-example.html` shows every component.
 - `jumpbit-theme.axaml` and `jumpbit-styles.axaml` — the same tokens and styles for Avalonia.
 
 Use these files; don't redefine colours, fonts or radii in the application.
@@ -20,7 +21,7 @@ Use these files; don't redefine colours, fonts or radii in the application.
 ## Steps
 1. Understand the client side framework used in the application.
 2. Identify the UI components and their styling requirements.
-3. Apply the Jump Bit design system globally: include `jumpbit-theme.css` (HTML) or merge the Avalonia theme files, and style through the semantic tokens.
+3. Apply the Jump Bit design system globally: include `jumpbit-theme.css` (HTML), followed by `jumpbit-ui.css` when the app needs layout and components, or merge the Avalonia theme files, and style through the semantic tokens.
 4. If there is no root page or entry page defined, follow these substeps:
     1. If it is HTML based, use the landing layout as the entry page. It is a centred column on the brand gradient (`--gradient-brand`) with the white logo:
 ```html
@@ -49,6 +50,7 @@ Use these files; don't redefine colours, fonts or radii in the application.
 - Shape: `--radius-md` (8px) for buttons and inputs, `--radius-lg` (14px) for cards, `--radius-sm` (4px) for small elements. Cards use `--shadow-md` with a `--color-border` hairline.
 - Focus: a solid 2px `--color-focus` outline with 2px offset on every focusable element.
 - Content pages use `.card` on `--color-surface`.
+- Don't add Bootstrap itself or another CSS framework; use the Bootstrap-like classes from `jumpbit-ui.css` and extend it with semantic tokens when a component is missing.
 
 ## Logo and icons
 All digital assets are in the main folder `assets/`.
