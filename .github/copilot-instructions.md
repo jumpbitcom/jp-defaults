@@ -10,6 +10,7 @@ Path-specific files are applied automatically when their `applyTo` pattern match
 | Node.js | [nodejs.instructions.md](instructions/nodejs.instructions.md) | `*.js`, `*.mjs`, `*.cjs`, `*.ts`, `package.json` |
 | TypeScript | [typescript.instructions.md](instructions/typescript.instructions.md) | `*.ts`, `*.tsx`, `*.mts`, `*.cts` |
 | Alpine.js | [alpinejs.instructions.md](instructions/alpinejs.instructions.md) | HTML/template files, `src/alpine/**` |
+| Astro | [astro.instructions.md](instructions/astro.instructions.md) | `*.astro`, `astro.config.*`, `src/pages/**`, `src/content/**` |
 | C# and .NET | [csharp-dotnet.instructions.md](instructions/csharp-dotnet.instructions.md) | `*.cs`, `*.csproj`, `*.props`, `*.razor` |
 | Avalonia UI | [avalonia.instructions.md](instructions/avalonia.instructions.md) | `*.axaml`, `Views/**`, `ViewModels/**` |
 | Python | [python.instructions.md](instructions/python.instructions.md) | `*.py`, `*.pyi`, `pyproject.toml` |

@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Added
 - `assets/jumpbit-ui.css`: a very light, Bootstrap-like component and utility layer on the Jump Bit theme (container, 12-column grid, navbar, forms, alerts, badges, tables, list group, spacing/flex/text utilities), using only semantic tokens so light and dark themes work.
 - `assets/jumpbit-ui-example.html`: example page showing every component.
+- Astro instructions (`.github/instructions/astro.instructions.md`), linked from the Node.js instructions, explaining when to use Astro (static sites) versus Alpine.js or Angular.
 
 ### Changed
 - Align `assets/` and the styling skill with the Jump Bit design system: Inter is the only typeface for headings, body text and buttons (loaded from `assets/font/`).

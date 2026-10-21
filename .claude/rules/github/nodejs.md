@@ -69,6 +69,7 @@ Never target end-of-life versions; Node 22 is in maintenance only. From Node 27 
 ## Serving Web Pages
 - Use [AlpineJS](https://alpinejs.dev) as the preferred front end in combination with Fastify.
 - Follow [alpinejs.instructions.md](./alpinejs.instructions.md).
+- Use [Astro](https://astro.build) for mostly static, content-driven websites (landing pages, company sites, documentation, blogs): it renders HTML at build time and ships no JavaScript by default. Alpine.js adds small interactivity to server-rendered or static pages; Angular is for full single-page applications with complex client state. Follow [astro.instructions.md](./astro.instructions.md).
 
 ## Security
 - Never pass untrusted input to `child_process.exec`, `eval`, `new Function`, `vm` or dynamic `import()`; use `execFile`/`spawn` with argument arrays.
