@@ -1,11 +1,10 @@
 ---
-description: "Review Azure infrastructure for private networking and naming compliance"
+description: "Review Azure infrastructure for private networking compliance"
 ---
 
 Review the current Azure infrastructure files.
 
 Check:
-- naming convention compliance
 - private endpoint coverage
 - public network access
 - managed identity usage

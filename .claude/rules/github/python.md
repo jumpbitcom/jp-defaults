@@ -93,7 +93,6 @@ Always check `requires-python` in `pyproject.toml` (and `.python-version`) first
 - Never use `eval`, `exec`, `pickle` or `yaml.load` (use `yaml.safe_load`) on untrusted data; use `subprocess.run([...], check=True)` with an argument list, never `shell=True` with interpolated input.
 - Set timeouts on every network call (`httpx.Client(timeout=...)`); verify TLS certificates.
 - Check dependencies for vulnerabilities in CI (e.g. `pip-audit`) and keep them updated.
-- For code that creates or configures Azure resource names, follow [the Azure naming convention](azure-naming-convention.instructions.md) and respect each service's naming restrictions.
 
 ## Documentation
 - Concise docstrings (Google style unless the project uses another) on public modules, classes and functions whose purpose or behavior isn't obvious. Document parameters, return values and raised exceptions; don't repeat the type annotations in prose.
