@@ -1,0 +1,55 @@
+---
+applyTo: "**/redis/**,**/redis*.conf"
+description: "Redis 8 caching, data modeling, configuration and security rules"
+---
+
+# Redis Guidelines
+https://redis.io/docs/latest/
+
+## Purpose
+Rules for using Redis as an in-memory key-value store for caching, sessions, rate limiting and fast data access, and for its configuration and server-side scripts. Target: **Redis Open Source 8.x**, which includes JSON, the query engine (search), time series and probabilistic data types. [Valkey](https://valkey.io) is an acceptable BSD-licensed alternative where the license matters; stay within the commands both support then.
+
+Applies to files under a `redis/` folder (Lua scripts, functions, configuration) and to `redis*.conf`. Client code follows the rules of its language (e.g. [python.instructions.md](./python.instructions.md)).
+
+## Role in the architecture
+- Redis is a cache and fast secondary store, not the system of record. Data that must not be lost lives in the primary database (MariaDB, SQLite, SQL Server); the application must work, slower, when Redis is empty or unavailable.
+- Use the message broker (ActiveMQ) for durable messaging; use Redis Streams or Pub/Sub only for lightweight, loss-tolerant events.
+
+## Keys
+- Name keys `<app>:<entity>:<id>[:<field>]` in lower case with `:` separators (e.g. `shop:user:42:cart`); keep names short but readable.
+- Set a TTL on every cache key (`SET key value EX 3600`, or `HEXPIRE` for individual hash fields); add jitter to TTLs to avoid stampedes.
+- Version cached formats in the key or value (`shop:v2:product:42`) so deployments don't read stale shapes.
+- Keep values small (well under 1 MB); split big collections and avoid "big keys" that block the server.
+
+## Data structures
+- Choose the type that matches the access pattern: strings for simple values and counters (`INCR`), hashes for objects, sorted sets for rankings and time windows, sets for membership, streams for event logs, JSON for nested documents.
+- Use the query engine (`FT.CREATE`, `FT.SEARCH`) for secondary indexes instead of maintaining manual index sets.
+- Serialize values in a stable format (JSON or MessagePack); never use language-specific serializers such as `pickle` for data that crosses process boundaries.
+
+## Commands and patterns
+- Never use `KEYS`, `FLUSHALL`, `FLUSHDB` or `MONITOR` in application code; use `SCAN` with `MATCH` and `COUNT` for iteration.
+- Batch round trips with pipelines; use `MULTI`/`EXEC` with `WATCH` or a script for atomic multi-key updates.
+- Prefer Redis Functions (`FUNCTION LOAD`) over ad hoc `EVAL` scripts; keep scripts short, deterministic and declare all keys they touch.
+- Implement locks only with a single `SET key token NX PX <ms>` plus a token-checked release script; don't use Redis locks for correctness-critical mutual exclusion.
+- Use cache-aside by default (read from Redis, fall back to the database, then populate) and invalidate on writes.
+
+## Clients
+- Use the official clients: `redis-py` (`redis.asyncio` for async), `node-redis`, `StackExchange.Redis` for .NET.
+- Create one client or connection pool per application and reuse it; set connect and command timeouts and handle connection errors with retries and backoff.
+- Read the connection URL and credentials from environment variables or Azure Key Vault; never hard-code them.
+
+## Configuration and operations
+- Set `maxmemory` and an explicit `maxmemory-policy` (`allkeys-lru` or `allkeys-lfu` for caches, `noeviction` only where data must not be evicted).
+- Choose persistence deliberately: none for pure caches, AOF (`appendfsync everysec`) or RDB snapshots when data must survive restarts.
+- Monitor memory, hit rate, evictions and latency (`INFO`, `LATENCY`, `SLOWLOG`).
+- Pin the server image to a specific version and digest in Compose files and the Dev Container.
+
+## Security
+- Never expose Redis to the public internet; bind to private interfaces and enable `protected-mode`.
+- Enable ACLs with one user per application and least privilege (`ACL SETUSER app on >secret ~app:* +@read +@write -@dangerous`); disable or restrict the `default` user.
+- Use TLS for any connection outside a single host; use managed offerings (Azure Managed Redis) with Microsoft Entra ID authentication in Azure.
+- Never cache secrets or personal data without a TTL and a clear need; don't log keys or values that contain them.
+
+## Testing
+- Run integration tests against a real Redis in a container (e.g. Testcontainers), not a mock; flush only the test database between tests.
+- Test the fallback path when Redis is unavailable.

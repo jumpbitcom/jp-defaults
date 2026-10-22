@@ -1,0 +1,52 @@
+---
+applyTo: "**/*.c,**/*.h"
+description: "C language, embedded, memory safety, tooling and testing rules"
+---
+
+# C Guidelines
+https://www.open-std.org/jtc1/sc22/wg14/
+
+## Purpose
+Rules for writing and reviewing C code, mainly for embedded systems and performance-critical components. Target: **C23** (ISO/IEC 9899:2024) where the project's toolchain supports it, **C17** as the minimum. Platform rules come first: follow [nrf.instructions.md](./nrf.instructions.md) for nRF Connect SDK / Zephyr projects and [arduino.instructions.md](./arduino.instructions.md) for Arduino and PlatformIO projects.
+
+Always check the standard set in the build system (`CMAKE_C_STANDARD`, `-std=`) first and only use features available there; never raise it silently.
+
+## Tooling
+- Build with CMake (or the platform's build system, e.g. `west` for Zephyr) and commit the configuration; pin the toolchain version (e.g. Arm GNU Toolchain, Zephyr SDK) in the repository or Dev Container.
+- Compile with warnings as errors: `-Wall -Wextra -Wpedantic -Wshadow -Wconversion -Wstrict-prototypes -Werror` (GCC/Clang). Don't silence warnings without a comment explaining why.
+- Format with `clang-format` using the committed `.clang-format`; lint with `clang-tidy` (and `cppcheck` where configured). Code must pass both with zero warnings.
+- Run tests on the host with AddressSanitizer and UndefinedBehaviorSanitizer (`-fsanitize=address,undefined`) in CI.
+
+## Style and naming
+- `snake_case` for functions and variables, `UPPER_SNAKE_CASE` for macros and enum constants, `snake_case_t` only for typedefs if the project already uses it.
+- Prefix public symbols with the module name (`uart_init`, `sensor_read`); make everything else `static`.
+- One module per `.c`/`.h` pair; headers contain only the public API, use include guards (or `#pragma once` if the project uses it) and include what they use.
+- Keep functions short and single-purpose; avoid deep nesting with early returns.
+
+## Language
+- Use fixed-width types from `<stdint.h>` (`uint8_t`, `int32_t`) for hardware registers, protocols and storage; `size_t` for sizes and indexes; `bool` from `<stdbool.h>` (keyword in C23).
+- Prefer `const` everywhere it applies, `static inline` functions over function-like macros, and `enum` or `constexpr` (C23) over `#define` for constants.
+- Use `nullptr` (C23) or `NULL`, never `0`, for null pointers; use `[[nodiscard]]` (C23) on functions whose return value must be checked.
+- Use `static_assert` to check sizes, alignments and configuration at compile time.
+- Avoid undefined behavior: no signed overflow, out-of-bounds access, uninitialized reads, strict-aliasing violations or shifts by the type's width or more. Use `memcpy` for type punning.
+- Mark memory-mapped registers and variables shared with interrupts as `volatile`; use atomics (`<stdatomic.h>`) or the RTOS's primitives for shared state between threads.
+
+## Memory and safety
+- Prefer static or stack allocation with bounded sizes on embedded targets; avoid `malloc`/`free` in long-running or interrupt paths. If dynamic allocation is used, check every result and define ownership in the function's doc comment.
+- Always pass buffer lengths along with pointers; never use `gets`, `strcpy`, `strcat`, `sprintf`; use `snprintf` and length-checked copies and check for truncation.
+- Validate all external input (communication buffers, sensor values, configuration) at the boundary.
+- Check every return value that can signal an error; return error codes (e.g. negative `errno` values, matching Zephyr convention) and handle them, never ignore them silently.
+- Never store secrets or keys in source code; use the platform's secure storage.
+
+## Embedded and real-time
+- Keep interrupt service routines minimal: acknowledge, capture data, defer work to a thread, work queue or main loop.
+- Avoid blocking calls and busy waits in time-critical paths; document timing assumptions and worst-case execution where they matter.
+- Consider stack size, power consumption and memory use when choosing buffers, thread priorities and polling intervals.
+
+## Documentation
+- Doc comments in Doxygen format (`/** ... */` with `@brief`, `@param`, `@return`) on every public function and type in headers.
+- Comments explain *why*, including hardware quirks with a reference to the datasheet or errata section.
+
+## Testing
+- Unit test hardware-independent logic on the host with Unity/CMock, or Ztest for Zephyr projects; abstract hardware access behind small interfaces so it can be faked.
+- Every bug fix includes a test that fails without the fix; verify hardware behavior on the target board.

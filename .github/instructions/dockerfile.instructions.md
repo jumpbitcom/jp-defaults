@@ -1,5 +1,6 @@
 ---
 applyTo: "**/Dockerfile,**/Dockerfile.*,**/*.Dockerfile,**/Containerfile,**/.dockerignore,**/compose.yaml,**/compose.*.yaml,**/docker-compose*.yml"
+description: "Dockerfile, image hardening and Compose rules for Debian slim and Alpine Linux"
 ---
 
 # Dockerfile Guidelines (Alpine Linux and Ubuntu)

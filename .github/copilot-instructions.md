@@ -5,23 +5,86 @@ These rules apply to every file and language in this repository. Language-specif
 ## Instruction files
 Path-specific files are applied automatically when their `applyTo` pattern matches the file being worked on. When working on a file type listed below, follow the linked file in addition to this one.
 
+Precedence when rules conflict: the more specific file wins (e.g. Alpine.js over TypeScript, Avalonia over C#/.NET for UI code, Rich over Python for terminal output, FastAPI over Python for the web layer, TypeScript over Node.js, Arduino and nRF over C/C++). Path-specific files win over this file. Delete rows for technologies this repository doesn't use.
+
+### NodeJS / JavaScript / TypeScript
+NodeJs shall be used for small server-side high network throughput applications and as tooling runtime for front end development. Use Astro for static web pages and AlpineJS for dynamic web pages or single page applications (SPA).
+
 | Topic | File | Applies to |
 | --- | --- | --- |
-| Node.js | [nodejs.instructions.md](instructions/nodejs.instructions.md) | `*.js`, `*.mjs`, `*.cjs`, `*.ts`, `package.json` |
+| Node.js | [nodejs.instructions.md](instructions/nodejs.instructions.md) | `*.js`, `*.mjs`, `*.cjs`, `*.ts`, `*.mts`, `*.cts`, `package.json` |
 | TypeScript | [typescript.instructions.md](instructions/typescript.instructions.md) | `*.ts`, `*.tsx`, `*.mts`, `*.cts` |
-| Alpine.js | [alpinejs.instructions.md](instructions/alpinejs.instructions.md) | HTML/template files, `src/alpine/**` |
-| Astro | [astro.instructions.md](instructions/astro.instructions.md) | `*.astro`, `astro.config.*`, `src/pages/**`, `src/content/**` |
-| C# and .NET | [csharp-dotnet.instructions.md](instructions/csharp-dotnet.instructions.md) | `*.cs`, `*.csproj`, `*.props`, `*.razor` |
-| Avalonia UI | [avalonia.instructions.md](instructions/avalonia.instructions.md) | `*.axaml`, `Views/**`, `ViewModels/**` |
+| Alpine.js | [alpinejs.instructions.md](instructions/alpinejs.instructions.md) | `*.html`, `*.astro`, `*.php`, `*.twig`, `*.njk`, `src/alpine/**/*.ts` |
+| Astro | [astro.instructions.md](instructions/astro.instructions.md) | `*.astro`, `astro.config.*`, `content.config.ts`, `src/pages/**`, `src/content/**`, `src/layouts/**` |
+
+### Python
+Use for more complex scripts and CLI tools, server-side applications with focus on web APIs and data processing tasks.
+
+| Topic | File | Applies to |
+| --- | --- | --- |
 | Python | [python.instructions.md](instructions/python.instructions.md) | `*.py`, `*.pyi`, `pyproject.toml` |
 | Python (Rich) | [rich-python.instructions.md](instructions/rich-python.instructions.md) | `*.py` (terminal output and rich command line interface) |
-| SQL Server / T-SQL | [sqlserver.instructions.md](instructions/sqlserver.instructions.md) | `sqlserver/**/*.sql`, `mssql/**/*.sql` |
-| MariaDB | [mariadb.instructions.md](instructions/mariadb.instructions.md) | `mariadb/**/*.sql` |
-| PowerShell | [powershell.instructions.md](instructions/powershell.instructions.md) | `*.ps1`, `*.psm1`, `*.psd1` |
-| Bash | [bash.instructions.md](instructions/bash.instructions.md) | `*.sh`, `*.bash` |
-| Docker | [dockerfile.instructions.md](instructions/dockerfile.instructions.md) | `Dockerfile*`, `compose*.yaml` |
+| FastAPI | [fastapi.instructions.md](instructions/fastapi.instructions.md) | `api/**/*.py`, `routers/**/*.py`, `routes/**/*.py`, `app/main.py` |
+| Jupyter Notebooks | [jupyter.instructions.md](instructions/jupyter.instructions.md) | `*.ipynb` |
 
-Precedence when rules conflict: the more specific file wins (e.g. Alpine.js or Electron over TypeScript, Avalonia over C#/.NET, Electron over Node.js for renderer code, Rich over Python for terminal output); path-specific files win over this file. Delete rows for technologies this repository doesn't use.
+### C# / .NET
+Use for fat clients and desktop applications (Windows, Macos, Linux, iOS/ipadOS or Android). Use for server-side applications with focus on high performance and scalability.
+
+| Topic | File | Applies to |
+| --- | --- | --- |
+| C# and .NET | [csharp-dotnet.instructions.md](instructions/csharp-dotnet.instructions.md) | `*.cs`, `*.csproj`, `*.props`, `*.targets`, `*.slnx`, `*.razor` |
+| Avalonia UI | [avalonia.instructions.md](instructions/avalonia.instructions.md) | `*.axaml`, `*.axaml.cs`, `Views/**/*.cs`, `ViewModels/**/*.cs` |
+
+Key libraries: [CommunityToolkit.Mvvm](https://learn.microsoft.com/dotnet/communitytoolkit/mvvm/) for MVVM, [Entity Framework Core](https://learn.microsoft.com/ef/core/) for data access, `Microsoft.Extensions.*` for dependency injection, configuration and logging, and xUnit v3 for tests.
+
+### Embedded Systems and C/C++
+To develop on embedded systems using C or C++, follow the guidelines for the specific platform (e.g., nRF, Arduino) and ensure proper handling of low-level hardware interactions, memory management, and real-time constraints. Use C for low-level hardware access and highest performance needs.
+
+| Topic | File | Applies to |
+| --- | --- | --- |
+| C | [c.instructions.md](instructions/c.instructions.md) | `*.c`, `*.h` |
+| C++ | [cpp.instructions.md](instructions/cpp.instructions.md) | `*.cpp`, `*.cc`, `*.cxx`, `*.hpp`, `*.hh`, `*.hxx` |
+| Arduino | [arduino.instructions.md](instructions/arduino.instructions.md) | `*.ino`, `*.pde`, `platformio.ini` |
+| nRF / Zephyr | [nrf.instructions.md](instructions/nrf.instructions.md) | `prj.conf`, `west.yml`, `Kconfig`, `*.overlay`, `boards/**/*.dts*`, `sysbuild.conf`, `pm_static.yml` |
+
+### SQL
+Use for structured data storage. Redis as an in-memory key-value store for caching and fast data access. For large data sets and complex queries, use a cloud provider database (e.g., AWS RDS, Google Cloud SQL, Azure Database). Use SQL server only if required by the target environment, otherwise prefer MariaDB or SQLite for local development and simpler setups.
+
+| Topic | File | Applies to |
+| --- | --- | --- |
+| MariaDB | [mariadb.instructions.md](instructions/mariadb.instructions.md) | `mariadb/**/*.sql` |
+| SQLite | [sqlite.instructions.md](instructions/sqlite.instructions.md) | `sqlite/**/*.sql` |
+| SQL Server / T-SQL | [sqlserver.instructions.md](instructions/sqlserver.instructions.md) | `sqlserver/**/*.sql`, `mssql/**/*.sql` |
+| Redis | [redis.instructions.md](instructions/redis.instructions.md) | `redis/**`, `redis*.conf` |
+
+### Shell
+For simple scripting and automation tasks, use shell scripts. Choose the shell based on the target environment and team familiarity. PowerShell is preferred for Windows environments, while Bash is common for Unix-like systems.
+
+| Topic | File | Applies to |
+| --- | --- | --- |
+| PowerShell | [powershell.instructions.md](instructions/powershell.instructions.md) | `*.ps1`, `*.psm1`, `*.psd1` |
+| Bash | [bash.instructions.md](instructions/bash.instructions.md) | `*.sh`, `*.bash`, `.bashrc`, `.bash_profile` |
+
+### Containerization
+Use Docker style configuration for containerization, including Dockerfiles and Compose files. Follow best practices for building, running and managing containers. Use [Debian slim](https://hub.docker.com/_/debian) as the standard base image, or [Alpine Linux](https://hub.docker.com/_/alpine) (based on musl libc) for very small and secure environments.
+
+| Topic | File | Applies to |
+| --- | --- | --- |
+| Docker | [dockerfile.instructions.md](instructions/dockerfile.instructions.md) | `Dockerfile*`, `*.Dockerfile`, `Containerfile`, `.dockerignore`, `compose*.yaml`, `docker-compose*.yml` |
+
+### Messaging
+
+For messaging and event-driven architectures, use the message broker [Apache ActiveMQ](https://activemq.apache.org), covering protocols like MQTT, AMQP, STOMP for on-premises hosting.
+
+### AI Models
+Use one of the following AI tools to test and integrate the latest language models from Hugging Face:
+
+| AI tool | Website | Language | Usage |
+| --- | --- | --- | --- |
+| LM Studio | https://lmstudio.ai | Any | Run Hugging Face models locally through an OpenAI-compatible API. |
+| Ollama | https://ollama.com | Python | Run Llama and other models locally. |
+
+
 
 ## How to work
 - Read existing code, configuration and documentation before suggesting changes; follow the conventions already in the repository over general preferences.

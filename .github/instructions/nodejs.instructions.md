@@ -1,5 +1,6 @@
 ---
 applyTo: "**/*.js,**/*.mjs,**/*.cjs,**/*.ts,**/*.mts,**/*.cts,**/package.json"
+description: "Node.js runtime, module, async, security and tooling rules"
 ---
 
 # Node.js Guidelines

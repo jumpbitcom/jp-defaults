@@ -1,5 +1,6 @@
 ---
 applyTo: "**/*.astro,**/astro.config.*,**/content.config.ts,src/pages/**,src/content/**,src/layouts/**"
+description: "Astro site structure, components, content collections and build rules"
 ---
 
 # Astro Guidelines

@@ -1,5 +1,6 @@
 ---
 applyTo: "**/*.ps1,**/*.psm1,**/*.psd1"
+description: "PowerShell 7 script and module style, safety and testing rules"
 ---
 
 # PowerShell Guidelines

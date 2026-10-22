@@ -1,5 +1,6 @@
 ---
 applyTo: "**/*.html,**/*.astro,**/*.php,**/*.twig,**/*.njk,src/alpine/**/*.ts"
+description: "Alpine.js 3.x component, state and template rules in TypeScript"
 ---
 
 # Alpine.js Guidelines

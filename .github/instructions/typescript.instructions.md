@@ -1,5 +1,6 @@
 ---
 applyTo: "**/*.ts,**/*.tsx,**/*.mts,**/*.cts"
+description: "TypeScript compiler settings, typing, style and testing rules"
 ---
 
 # TypeScript Guidelines

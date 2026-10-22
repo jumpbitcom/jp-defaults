@@ -1,5 +1,6 @@
 ---
 applyTo: "**/*.sh,**/*.bash,**/.bashrc,**/.bash_profile"
+description: "Bash script safety, portability, style and testing rules"
 ---
 
 # Bash Guidelines

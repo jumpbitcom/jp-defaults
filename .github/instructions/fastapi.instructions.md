@@ -1,0 +1,63 @@
+---
+applyTo: "**/api/**/*.py,**/routers/**/*.py,**/routes/**/*.py,**/app/main.py"
+description: "FastAPI service, routing, validation, security and testing rules for Python"
+---
+
+# FastAPI Guidelines
+https://fastapi.tiangolo.com/
+
+## Purpose
+Rules for building and reviewing RESTful HTTP services with **FastAPI** on **Pydantic v2**. These rules apply whenever a Python file defines an app, router, endpoint, dependency or middleware. Follow [python.instructions.md](./python.instructions.md) for all general Python rules; this file only covers the web layer.
+
+Applies to `.py` files under `api/`, `routers/` or `routes/` folders and to `app/main.py`. In a repository that is only a FastAPI service, you can widen `applyTo` to `**/*.py`.
+
+## Installation and setup
+- Declare `fastapi[standard]` in `pyproject.toml` with a lower and upper bound on the minor version (FastAPI is still `0.x`, so minor releases may break); install via the project's tool (`uv`, `pip`, `poetry`) and commit the lock file.
+- Run locally with `fastapi dev`, in production with `fastapi run` (or `uvicorn` behind the platform's process manager); never ship with `--reload`.
+- Create the `FastAPI()` instance in one module (e.g. `app/main.py`) with `title`, `version` and `lifespan`; split endpoints into `APIRouter`s per resource (`app/routers/users.py`) and include them with a `prefix` and `tags`.
+- Use the `lifespan` async context manager for startup and shutdown (database pools, shared `httpx.AsyncClient`); don't use the deprecated `@app.on_event`.
+- Load configuration once with `pydantic-settings` and expose it through a cached dependency (`@lru_cache def get_settings()`); validate at startup and fail fast.
+
+## Endpoints
+- Prefer `async def` for I/O-bound endpoints and use async libraries inside them. Never call blocking I/O in an `async def` endpoint; declare it as plain `def` (FastAPI runs it in a thread pool) or wrap the call in `asyncio.to_thread()`.
+- Follow REST conventions: plural nouns for resources (`/users/{user_id}`), HTTP methods for actions, no verbs in paths. Version the API in the path (`/api/v1`) or via router prefix.
+- Return the correct status codes and set them explicitly with `status_code=status.HTTP_201_CREATED` (from `fastapi import status`), e.g. `201` on create, `204` on delete with no body, `404` for missing resources, `409` for conflicts, `422` is reserved for validation errors.
+- Declare parameters with `Annotated` (`user_id: Annotated[int, Path(gt=0)]`, `q: Annotated[str | None, Query(max_length=50)] = None`); don't use the old default-value style (`= Query(...)`).
+- Add `summary`, a docstring and `responses={...}` for documented error codes so the generated OpenAPI schema is accurate; keep `/docs` and `/openapi.json` disabled or protected in production if the API isn't public.
+
+## Request and response models
+- Use Pydantic models for every request body and response; never accept or return raw `dict`.
+- Declare the response type via the return annotation or `response_model`; use separate models for input, output and storage (`UserCreate`, `UserRead`, `UserInDB`) so internal fields such as password hashes never leak.
+- Use `response_model_exclude_unset=True` for `PATCH` semantics and partial update models with all fields optional.
+- Paginate collections (`limit`/`offset` or cursor) with an enforced maximum page size.
+
+## Dependencies
+- Use `Depends()` for shared logic (database sessions, current user, settings, pagination) and alias them with `Annotated` (`SessionDep = Annotated[AsyncSession, Depends(get_session)]`).
+- Use `yield` dependencies for resources that need cleanup (a database session per request); commit or roll back explicitly.
+- Keep business logic in service or repository modules, not in endpoint functions; endpoints parse input, call services and map results to response models.
+
+## Errors
+- Raise `HTTPException` (or a project-specific subclass) with a clear, non-sensitive `detail`; never return error payloads with a `200` status.
+- Register exception handlers (`@app.exception_handler(DomainError)`) to map domain exceptions to HTTP responses in one place, using a consistent error body (e.g. RFC 9457 problem details).
+- Never expose stack traces, SQL or internal identifiers in responses; log them with the request's correlation ID instead.
+
+## Security
+- Protect every non-public endpoint with an authentication dependency (`OAuth2PasswordBearer`, `HTTPBearer` or the identity provider's validator such as Microsoft Entra ID) and check authorization (scopes/roles) per endpoint with `Security(..., scopes=[...])`.
+- Validate JWTs fully: signature, issuer, audience, expiry; never decode without verification.
+- Configure `CORSMiddleware` with an explicit list of origins, methods and headers; never `allow_origins=["*"]` together with `allow_credentials=True`.
+- Set `TrustedHostMiddleware` and serve over HTTPS behind the platform's ingress; enforce request size limits and rate limiting at the gateway or with middleware.
+
+## Outgoing HTTP calls
+- Use one shared `httpx.AsyncClient` created in `lifespan` and injected via a dependency; don't create a client per request.
+- Set explicit timeouts on every call, call `response.raise_for_status()` and handle `httpx.HTTPStatusError` and `httpx.TimeoutException` explicitly; never swallow exceptions.
+- Add retries with backoff only for idempotent requests.
+
+## Background work and observability
+- Use `BackgroundTasks` only for short, non-critical work after the response; use a proper job queue for anything long-running or that must not be lost.
+- Add a correlation ID middleware and structured (JSON) logging; expose `/health` (liveness) and `/ready` (readiness) endpoints that don't require authentication.
+- Instrument with `opentelemetry-instrumentation-fastapi` where the deployment supports OpenTelemetry.
+
+## Testing
+- Test endpoints with `fastapi.testclient.TestClient` for sync tests, or `httpx.AsyncClient(transport=httpx.ASGITransport(app=app))` with `pytest-asyncio`/`anyio` for async tests.
+- Replace external dependencies with `app.dependency_overrides[...]`; clear the overrides after each test (fixture teardown).
+- Cover success paths, validation errors (`422`), authentication/authorization failures (`401`/`403`) and not-found cases for every endpoint.

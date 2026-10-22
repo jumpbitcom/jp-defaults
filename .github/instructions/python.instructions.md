@@ -10,6 +10,8 @@ Rules for writing and reviewing Python code. Targets **Python 3.14** (current st
 
 Always check `requires-python` in `pyproject.toml` (and `.python-version`) first. Only use language features available in the lowest supported version; never raise the minimum version silently. If the project has more specific instructions (e.g. [Rich](rich-python.instructions.md) for terminal output), follow them as well.
 
+Jupyter notebooks follow the same Python version and dependency rules as the rest of the project: declare dependencies in `pyproject.toml` with `uv add` and run notebooks through the project's environment. Follow [jupyter.instructions.md](jupyter.instructions.md) for additional guidelines.
+
 ## Project setup
 - Manage projects, dependencies, Python versions and virtual environments with **`uv`** unless the project already uses another tool (`poetry`, `pdm`, `pip-tools`). Don't mix tools in one project.
 - All metadata and tool configuration lives in `pyproject.toml` (PEP 621); no `setup.py`, `setup.cfg` or `requirements.txt` in new projects. Commit `uv.lock`.
@@ -49,6 +51,7 @@ Always check `requires-python` in `pyproject.toml` (and `.python-version`) first
 - On 3.14+, annotations are evaluated lazily (PEP 649); don't add `from __future__ import annotations` in new 3.14-only code, and don't quote forward references. Keep it where the project still supports older versions.
 - Avoid `Any`; use `object` when any value is accepted, and `cast()` only with a comment explaining why. `# type: ignore[code]` must name the error code.
 - Put imports only needed for typing under `if TYPE_CHECKING:`.
+- Use [pydantic validation](https://pydantic.dev/docs/validation) for data types
 
 ## Idioms
 - f-strings for interpolation; t-strings (PEP 750, 3.14+) when a library needs to process the interpolated parts safely (SQL, HTML, shell). Never build SQL, HTML or shell commands with f-strings or `%` from untrusted input.
@@ -82,6 +85,18 @@ Always check `requires-python` in `pyproject.toml` (and `.python-version`) first
 - Start programs with `asyncio.run(main())`; don't manage event loops manually.
 - Use `concurrent.futures.ThreadPoolExecutor` for blocking I/O and `ProcessPoolExecutor` (or `InterpreterPoolExecutor` on 3.14+) for CPU-bound work. Don't rely on the free-threaded build unless the project explicitly targets it.
 - Protect shared mutable state with locks or avoid it; prefer passing data through queues.
+
+## RESTful communication
+- Use [FastAPI](https://fastapi.tiangolo.com/) for building RESTful APIs and follow [fastapi.instructions.md](./fastapi.instructions.md).
+- Use `httpx` for HTTP requests; prefer async clients (`httpx.AsyncClient`) for I/O-bound operations.
+- Handle HTTP errors and timeouts explicitly; never ignore exceptions.
+
+## Database access and ORM usage
+- Use [SQLAlchemy](https://www.sqlalchemy.org) 2.x with typed `Mapped[]` models for ORM-based database access.
+- Prefer async database drivers (`asyncpg` for PostgreSQL) for I/O-bound operations.
+- Use sessions and transactions properly; commit or rollback explicitly.
+- Avoid raw SQL unless necessary; if used, always parameterize queries to prevent SQL injection.
+- Handle database errors and connection issues gracefully; never ignore exceptions.
 
 ## Configuration and security
 - Keep secrets out of source code, tests and logs. Read configuration from environment variables or an approved secret store (e.g. Azure Key Vault); use `pydantic-settings` for typed configuration with validation at startup.

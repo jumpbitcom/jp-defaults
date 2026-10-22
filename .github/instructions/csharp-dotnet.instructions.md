@@ -1,5 +1,6 @@
 ---
 applyTo: "**/*.cs,**/*.csproj,**/*.props,**/*.targets,**/*.slnx,**/*.razor"
+description: "C# language, .NET project, tooling, testing and review rules"
 ---
 
 # C# and .NET Guidelines

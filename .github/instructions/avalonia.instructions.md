@@ -1,5 +1,6 @@
 ---
-applyTo: "**/*.axaml,**/*.axaml.cs,**/ViewModels/**/*.cs,**/Views/**/*.cs,**/App.axaml.cs,**/Program.cs"
+applyTo: "**/*.axaml,**/*.axaml.cs,**/ViewModels/**/*.cs,**/Views/**/*.cs,**/App.axaml.cs"
+description: "Avalonia UI XAML, MVVM, styling and cross-platform app rules"
 ---
 
 # Avalonia UI Guidelines

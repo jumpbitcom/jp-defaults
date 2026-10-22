@@ -1,0 +1,16 @@
+---
+description: "Use when developing for Nordic Semiconductor nRF devices with the nRF Connect SDK, Zephyr, or related board and device-tree configuration."
+applyTo: "**/prj.conf,**/west.yml,**/Kconfig,**/*.overlay,**/boards/**/*.dts,**/boards/**/*.dtsi,**/sysbuild.conf,**/pm_static.yml"
+---
+
+# nRF Connect SDK and Zephyr Guidelines
+
+https://github.com/NordicSemiconductor
+
+- Follow the SDK and Zephyr versions already selected by the project; verify API availability against those versions before using newer APIs.
+- Describe board hardware with devicetree and select software features with Kconfig rather than hardcoding peripheral addresses or build-time assumptions in application code.
+- Use Zephyr device drivers and APIs for GPIO, I2C, SPI, UART, timers, and other peripherals; check device readiness and return codes before relying on hardware operations.
+- Keep long-running work out of interrupt handlers. Defer processing to a thread, work queue, or other appropriate Zephyr execution context, and use synchronization primitives for shared state.
+- Use the Zephyr logging subsystem instead of ad hoc `printf` diagnostics in production paths; avoid logging secrets or sensitive device data.
+- Consider power consumption, stack size, and memory use when choosing thread priorities, buffers, and polling intervals.
+- Build and test against the intended nRF board and build configuration; include relevant overlays and configuration fragments when diagnosing hardware-specific behavior.
